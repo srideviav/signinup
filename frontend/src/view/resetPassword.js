@@ -5,41 +5,30 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Button, Card, Form, Input } from 'antd';
 
-const LoginVW = () => {
+const ResetPasswordVW = () => {
   const navigate = useNavigate();
   const [user, setUser] = React.useState({
-    username: '',
+    email: '',
     password: ''
   });
   const handleSubmit = () => {
-    axios
-      .post('http://localhost:5000/user/login', user)
-      .then((response) => {
-        if (response.data.status === true) {
-          setUser(response.data);
-          localStorage.setItem('token', response.data.token);
-          toast.success(response.data.message, {
-            position: 'top-right',
-            autoClose: 2000
-          });
-          setTimeout(() => {
-            navigate('/dashboard');
-          }, [2000]);
-        } else {
-          toast.error(response.data.errors, {
-            position: 'top-right',
-            autoClose: 2000
-          });
-        }
-      })
-      .catch((err) => {
-        toast.error(err, {
+    axios.post('http://localhost:5000/user/resetPassword', user).then((response) => {
+      if (response.data.status === true) {
+        toast.success(response.message, {
           position: 'top-right',
           autoClose: 2000
         });
-      });
+        setTimeout(() => {
+          navigate('/resetPassword');
+        }, [2000]);
+      } else {
+        toast.error(response.data.errors, {
+          position: 'top-right',
+          autoClose: 2000
+        });
+      }
+    });
   };
-
   return (
     <div
       style={{
@@ -47,7 +36,7 @@ const LoginVW = () => {
         paddingLeft: 380
       }}>
       <Card
-        title="Login"
+        title="Reset Password"
         // bordered = { false }
         style={{
           width: 500
@@ -61,18 +50,25 @@ const LoginVW = () => {
           colon={false}
           style={{ maxWidth: 600 }}>
           <Form.Item
-            label="Username or Email"
-            name="username"
-            onChange={(e) => setUser({ ...user, username: e.target.value })}
-            rules={[{ required: true, message: 'Please input your username or email!' }]}>
+            label="Email"
+            name="email"
+            onChange={(e) => setUser({ ...user, email: e.target.value })}
+            rules={[{ required: true }]}>
             <Input />
           </Form.Item>{' '}
           <Form.Item
-            label="Password"
+            label="password"
             name="password"
             onChange={(e) => setUser({ ...user, password: e.target.value })}
-            rules={[{ required: true, message: 'Please input your password!' }]}>
-            <Input.Password />
+            rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>{' '}
+          <Form.Item
+            label="confirm password"
+            //name="password"
+            // onChange={(e) => setUser({ ...user, resetToken: e.target.value })}
+            rules={[{ required: true }]}>
+            <Input />
           </Form.Item>{' '}
           <Form.Item label=" ">
             <Button type="primary" htmlType="submit" onClick={handleSubmit}>
@@ -80,17 +76,13 @@ const LoginVW = () => {
             </Button>{' '}
           </Form.Item>{' '}
         </Form>{' '}
-        <Link to="/register">
+        <Link to="/">
           {' '}
-          <Button> New User ? Register Here </Button>{' '}
-        </Link>{' '}
-        <Link to="/forgotPassword">
-          {' '}
-          <Button> Forgot Password ? </Button>{' '}
+          <Button> Back </Button>{' '}
         </Link>{' '}
       </Card>{' '}
       <ToastContainer /> {''}{' '}
     </div>
   );
 };
-export default LoginVW;
+export default ResetPasswordVW;
