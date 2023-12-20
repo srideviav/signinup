@@ -101,7 +101,7 @@ exports.login = (req, res) => {
                     } else {
                         return res.json({
                             status: false,
-                            message: "Incorrect Password"
+                            errors: "Incorrect Password"
                         })
                     }
                 });
@@ -109,7 +109,7 @@ exports.login = (req, res) => {
             } else {
                 return res.json({
                     status: false,
-                    message: "User Not Found",
+                    errors: "User Not Found",
                 })
             }
         }).catch(err => {
@@ -199,28 +199,41 @@ exports.forgotPassword = (req, res) => {
     }
 };
 exports.resetPassword = (req, res) => {
-    User.findOne({ email: req.body.email })
-        .then(data => {
-            if (data) {
-                data.password = req.body.password;
-                data.save();
-                return res.json({
-                    status: true,
-                    message: "Password have been changed successfully"
-                })
-            } else {
+    const validation = validationResult(req);
+    if (validation.errors.length > 0) {
+        let error = [];
+        validation.errors.map(response => {
+            error.push(response.msg)
+        })
+        return res.json({
+            status: false,
+            message: "Validation Error",
+            errors: error
+        })
+    } else {
+        User.findOne({ email: req.body.email })
+            .then(data => {
+                if (data) {
+                    data.password = req.body.password;
+                    data.save();
+                    return res.json({
+                        status: true,
+                        message: "Password have been changed successfully"
+                    })
+                } else {
+                    return res.json({
+                        status: false,
+                        errors: "Email not found"
+                    })
+                }
+            })
+            .catch(err => {
                 return res.json({
                     status: false,
-                    errors: "Password is not updated,try again"
+                    errors: err.msg
                 })
-            }
-        })
-        .catch(err => {
-            return res.json({
-                status: false,
-                errors: err.msg
             })
-        })
+    }
 };
 exports.dashboard = (req, res) => {
     User.findOne({ _id: req.user._id })
