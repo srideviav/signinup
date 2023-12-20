@@ -23,7 +23,7 @@ afterAll((done) => {
 
 it('Should return Email cannot be empty', (done) => {
     request(app)
-        .post('/user/forgotPassword')
+        .post('/user/checkOTP')
         .then(response => {
             expect(response.body.errors).toContain('Email Cannot Be Empty');
             done()
@@ -31,8 +31,8 @@ it('Should return Email cannot be empty', (done) => {
 });
 it('Should return Email sent', (done) => {
     request(app)
-        .post('/user/forgotPassword')
-        .send({ email: 'logintest@mail.com' })
+        .post('/user/checkOTP')
+        .send({ resetToken: 'logintest@mail.com' })
         .then(response => {
             expect(response.body.message).toBe('Email sent to registered mail ID');
             done()
@@ -40,8 +40,8 @@ it('Should return Email sent', (done) => {
 });
 it('Should return Email not found', (done) => {
     request(app)
-        .post('/user/forgotPassword')
-        .send({ email: 'login@mail.com' })
+        .post('/user/checkOTP')
+        .send({ resetToken: 'login@mail.com' })
         .then(response => {
             expect(response.body.errors).toBe('Email not found');
             done()

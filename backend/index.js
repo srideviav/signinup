@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const dotenv = require('dotenv')
@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === 'dev') {
             console.log("Something Went Wrong:", err)
         })
 } else {
-    DB = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_TEST}`
+    DB = mongoose.connect(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_TEST}`)
 
 }
 
@@ -36,4 +36,4 @@ app.listen(port, () => {
     console.log(`Running on port http://localhost:${port}`)
 })
 
-module.exports = { app, DB }
+module.exports = app;

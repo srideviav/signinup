@@ -1,59 +1,69 @@
 const request = require('supertest');
-const { app, DB } = require('../index');
-const { default: mongoose } = require('mongoose');
+const app = require('../index');
+const User = require('../model/userModel');
 
-beforeAll(async() => {
-    await mongoose.connect(DB);
-    console.log("Test DB connected Successfully")
+beforeAll((done) => {
+    User.create({
+        name: "login test",
+        username: "login test",
+        email: "logintest@mail.com",
+        password: "LoginTest#123"
+    }).then(user => {
+        console.log("user created")
+    }).catch(err => {
+        console.log("catch the error:", err)
+    })
+    done()
 });
 
-afterAll(async() => {
-    await mongoose.disconnect(DB);
-    console.log("Test DB disconnected Sucessfully")
+afterAll((done) => {
+    User.deleteMany()
+    done()
 });
 
-test('Should return email or username cannot be empty', () => {
+it('Should return email or username cannot be empty', (done) => {
     request(app)
         .post('/user/login')
         .send({ password: 'testPassword' })
         .then(response => {
-            console.log(response.body, "--------jest response---------")
-            expect(response.body.errors).toBe('Username or Email Cannot Be Empty');
+            //console.log(response.body, "--------jest response---------")
+            expect(response.body.errors).toContain('Username or Email Cannot Be Empty');
+            done()
         })
 });
-test('Should return password cannot be empty', () => {
+it('Should return password cannot be empty', (done) => {
     request(app)
         .post('/user/login')
-        .send({ email: 'test@example.com' })
+        .send({ username: 'logintest@mail.com' })
         .then(response => {
-            console.log(response.body, "--------jest response---------")
-            expect(response.body.errors).toBe('Password Cannot Be Empty');
+            expect(response.body.errors).toContain('Password Cannot Be Empty');
+            done()
         })
 });
-test('Should return password in incorrect', () => {
+it('Should return password is incorrect', (done) => {
     request(app)
         .post('/user/login')
-        .send({ username: 'testUser', password: 'testPassword' })
+        .send({ username: 'login test', password: 'testPassword' })
         .then(response => {
-            console.log(response.body, "--------jest response---------")
             expect(response.body.errors).toBe('Incorrect Password');
+            done()
         })
 });
-test('Should return user is not found', () => {
+it('Should return user is not found', (done) => {
     request(app)
         .post('/user/login')
-        .send({ email: 'test@example.com', password: 'testUser' })
+        .send({ username: 'test@example.com', password: 'testUser' })
         .then(response => {
-            console.log(response.body, "--------jest response---------")
             expect(response.body.errors).toBe('User Not Found');
+            done()
         })
 });
-test('Should return user login successfully', () => {
+it('Should return user login successfully', (done) => {
     request(app)
         .post('/user/login')
-        .send({ username: 'testUser', password: 'testPassword' })
+        .send({ username: 'login test', password: 'LoginTest#123' })
         .then(response => {
-            console.log(response.body, "--------jest response---------")
             expect(response.body.message).toBe('User Logged In Successfully');
+            done()
         })
 });
