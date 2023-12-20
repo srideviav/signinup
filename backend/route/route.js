@@ -31,6 +31,7 @@ router.post('/resetPassword', [check('password').notEmpty().withMessage("Passwor
     .matches(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/)
     .withMessage("Password Should contain atleast 1 uppercase,1 lowercase, 1 integer,1 special character")
     .trim(),
+    check('email').notEmpty().withMessage("Email Cannot Be Empty")
 ], userController.resetPassword);
 
 
