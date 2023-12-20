@@ -29,11 +29,10 @@ if (process.env.NODE_ENV === 'dev') {
         })
 } else {
     DB = mongoose.connect(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_TEST}`)
-
 }
 
-app.listen(port, () => {
-    console.log(`Running on port http://localhost:${port}`)
+app.listen(process.env.PORT, () => {
+    console.log(`Running on port http://localhost:${process.env.PORT}`)
 })
 
 module.exports = app;
