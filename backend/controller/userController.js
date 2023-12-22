@@ -178,10 +178,14 @@ exports.forgotPassword = (req, res) => {
                     data.resetToken = generateToken;
                     data.tokenExpires = Date.now() + 1800000;
                     data.save()
+                    const token = jwt.sign({
+                        email: data.email
+                    }, process.env.SECRET, { expiresIn: '1h' })
                     return res.json({
                         status: true,
                         message: "Email sent to registered mail ID",
-                        //data: sendEmail()
+                        token: token
+                            //data: sendEmail()
                     })
                 } else {
                     return res.json({
@@ -211,7 +215,7 @@ exports.resetPassword = (req, res) => {
             errors: error
         })
     } else {
-        User.findOne({ email: req.body.email })
+        User.findOne({ resetToken: req.body.otp })
             .then(data => {
                 if (data) {
                     data.password = req.body.password;
@@ -223,7 +227,7 @@ exports.resetPassword = (req, res) => {
                 } else {
                     return res.json({
                         status: false,
-                        errors: "Email not found"
+                        errors: "Invalid OTP"
                     })
                 }
             })
@@ -236,6 +240,7 @@ exports.resetPassword = (req, res) => {
     }
 };
 exports.dashboard = (req, res) => {
+    console.log(req.user._id, "===check user logged")
     User.findOne({ _id: req.user._id })
         .then(data => {
             if (data) {

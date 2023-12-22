@@ -11,33 +11,56 @@ const LoginVW = () => {
     username: '',
     password: ''
   });
+  const handleError = (err) => {
+    toast.error(err, {
+      position: 'top-right',
+      autoClose: 3000
+    });
+  };
+  const validation = () => {
+    if (!user.username) {
+      handleError('Username or Email Cannot be Empty');
+    }
+
+    if (!user.password) {
+      handleError('Password Cannot be Empty');
+    }
+    const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
+    const isValidPassword = passwordRegex.test(user.password);
+    if (!isValidPassword) {
+      handleError('Password is not valid');
+    }
+    return true;
+  };
   const handleSubmit = () => {
-    axios
-      .post('http://localhost:5000/user/login', user)
-      .then((response) => {
-        if (response.data.status === true) {
-          setUser(response.data);
-          localStorage.setItem('token', response.data.token);
-          toast.success(response.data.message, {
+    if (validation()) {
+      axios
+        .post('http://localhost:5000/user/login', user)
+        .then((response) => {
+          if (response.data.status === true) {
+            setUser(response.data);
+            localStorage.setItem('token', response.data.token);
+            toast.success(response.data.message, {
+              position: 'top-right',
+              autoClose: 2000
+            });
+            setTimeout(() => {
+              navigate('/dashboard');
+            }, [2000]);
+          } else {
+            toast.error(response.data.errors, {
+              position: 'top-right',
+              autoClose: 2000
+            });
+          }
+        })
+        .catch((err) => {
+          toast.error(err, {
             position: 'top-right',
             autoClose: 2000
           });
-          setTimeout(() => {
-            navigate('/dashboard');
-          }, [2000]);
-        } else {
-          toast.error(response.data.errors, {
-            position: 'top-right',
-            autoClose: 2000
-          });
-        }
-      })
-      .catch((err) => {
-        toast.error(err, {
-          position: 'top-right',
-          autoClose: 2000
         });
-      });
+    }
   };
 
   return (

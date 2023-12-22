@@ -1,26 +1,40 @@
-// const { SESClient, SendTemplateEmailCommand } = require("@aws-sdk/client-ses");
-// require('dotenv').config();
+// const AWS = require('aws-sdk');
 
 // const SES_CONFIG = {
-//     credentials: {
-//         accessKeyId: process.env.AWS_ACCESS_KEY,
-//         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-//     },
-//     region: process.env.AWS_SES_REGION
-// };
+//     accessKeyId: process.env.AWS_ACCESS_KEY || "access key",
+//     secretAccessKey: process.env.AWS_SECRET_KEY || "secret key",
+//     region: process.env.AWS_REGION || "region"
+// }
+// const AWS_SES = new AWS.SES(SES_CONFIG);
 
-// const SesClient = new SESClient(SES_CONFIG);
 
-// const sendMail = async(templateName, recipientEmail) => {
-//     const SendTemplateEmailCommand = new SendTemplateEmailCommand({
+// const Send = async(toEmail, name) => {
+//     let params = {
+//         Source: process.env.AWS_SENDER_EMAIL || "srideviav456@gmail.com",
 //         Destination: {
-//             ToAddress: [
-//                 recipientEmail
+//             ToAddresses: [
+//                 toEmail
 //             ]
 //         },
-//         Source: process.env.AWS_SES_SENDER,
-//         Template: templateName,
-//         TemplateData: JSON.stringify({ name: "theuser" })
-//     });
+//         ReplyToAddresses: [],
+//         Message: {
+//             Body: {
+//                 Text: {
+//                     Data: "This is the Password Recovery Email"
+//                 }
+//             },
+//             Subject: {
+//                 Data: `Hello ${name}! name`
+//             }
+//         }
+//     }
+//     try {
+//         const res = await AWS_SES.sendEmail(params).promise();
+//         console.log("Email Sent:", res)
+//     } catch (error) {
+//         console.log(error)
+//     }
 // }
-// sendMail("SES-Template", "srideviav456@gmail.com")
+
+
+// Send("srideviav456@gmail.com", "sridevi")

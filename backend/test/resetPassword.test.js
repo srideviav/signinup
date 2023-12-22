@@ -7,7 +7,8 @@ beforeAll((done) => {
         name: "login test",
         username: "login test",
         email: "logintest@mail.com",
-        password: "LoginTest#123"
+        password: "LoginTest#123",
+        resetToken: "12345"
     }).then(user => {
         console.log("user created")
     }).catch(err => {
@@ -24,27 +25,30 @@ afterAll((done) => {
 it('Should return Password cannot be empty', (done) => {
     request(app)
         .post('/user/resetPassword')
+        .send({ resetToken: "123455" })
         .then(response => {
             expect(response.body.errors).toContain('Password Cannot Be Empty');
             done()
         })
 });
 
-it('Should return Email cannot be empty', (done) => {
+it('Should return OTP cannot be empty', (done) => {
     request(app)
         .post('/user/resetPassword')
+        .send({ password: "Test$34567" })
         .then(response => {
-            expect(response.body.errors).toContain('Email Cannot Be Empty');
+            expect(response.body.errors).toContain('OTP cannot be empty');
             done()
         })
 });
 
-it('Should return Email not found ', (done) => {
+it('Should return Invalid OTP ', (done) => {
     request(app)
         .post('/user/resetPassword')
-        .send({ email: "login@mail.com", password: "TestPassword@123" })
+        .send({ otp: "12345nsbcm5", password: "TestPassword@123" })
         .then(response => {
-            expect(response.body.errors).toBe('Email not found');
+            console.log(response.body, "==================9999999999999")
+            expect(response.body.errors).toBe('Invalid OTP');
             done()
         })
 });
@@ -52,7 +56,7 @@ it('Should return Email not found ', (done) => {
 it('Should return Password is not valid', (done) => {
     request(app)
         .post('/user/resetPassword')
-        .send({ email: "logintest@mail.com", password: "T123" })
+        .send({ resetToken: "4568908", password: "T123" })
         .then(response => {
             expect(response.body.errors).toContain('Password Should contain atleast 1 uppercase,1 lowercase, 1 integer,1 special character');
             done()
@@ -63,8 +67,9 @@ it('Should return Password is not valid', (done) => {
 it('Should return password changed successfully', (done) => {
     request(app)
         .post('/user/resetPassword')
-        .send({ email: "logintest@mail.com", password: "TestPassword@123" })
+        .send({ otp: "12345", password: "TestPassword@123" })
         .then(response => {
+            console.log(response.body, "============================")
             expect(response.body.message).toBe('Password have been changed successfully');
             done()
         })

@@ -52,7 +52,7 @@ it('Should return password is incorrect', (done) => {
 it('Should return user is not found', (done) => {
     request(app)
         .post('/user/login')
-        .send({ username: 'test@example.com', password: 'testUser' })
+        .send({ username: 'testee@example.com', password: 'LoginTest#123' })
         .then(response => {
             expect(response.body.errors).toBe('User Not Found');
             done()
@@ -63,6 +63,7 @@ it('Should return user login successfully', (done) => {
         .post('/user/login')
         .send({ username: 'login test', password: 'LoginTest#123' })
         .then(response => {
+            console.log("-----------------resssssssss", response.body.message)
             expect(response.body.message).toBe('User Logged In Successfully');
             done()
         })

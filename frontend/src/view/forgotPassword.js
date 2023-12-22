@@ -10,23 +10,38 @@ const ForgotPasswordVW = () => {
   const [user, setUser] = React.useState({
     email: ''
   });
-  const handleForgotPassword = () => {
-    axios.post('http://localhost:5000/user/forgotPassword', user).then((response) => {
-      if (response.data.status === true) {
-        toast.success(response.message, {
-          position: 'top-right',
-          autoClose: 2000
-        });
-        setTimeout(() => {
-          navigate('/checkOTP');
-        }, []);
-      } else {
-        toast.error(response.data.errors, {
-          position: 'top-right',
-          autoClose: 2000
-        });
-      }
+  const handleError = (err) => {
+    toast.error(err, {
+      position: 'top-right',
+      autoClose: 3000
     });
+  };
+  const validation = () => {
+    if (!user.email) {
+      handleError('Email Cannot be Empty');
+    }
+    return true;
+  };
+  const handleForgotPassword = () => {
+    if (validation()) {
+      axios.post('http://localhost:5000/user/forgotPassword', user).then((response) => {
+        if (response.data.status === true) {
+          localStorage.setItem('reset token', response.data.token);
+          toast.success(response.message, {
+            position: 'top-right',
+            autoClose: 2000
+          });
+          setTimeout(() => {
+            navigate('/resetPassword');
+          }, []);
+        } else {
+          toast.error(response.data.errors, {
+            position: 'top-right',
+            autoClose: 2000
+          });
+        }
+      });
+    }
   };
   return (
     <div
